@@ -16,4 +16,15 @@ start_end_pairs n = [(x,y) | x <- l, y <- l, x <= y]
 extract :: (Int,Int) -> [Int] -> [Int]
 extract (start,end) l = drop (start - 1) (take end l)
 
--- map (\p -> extract p [1..10]) (start_end_pairs 10)
+-- folding function, compares the new list with the max sum subseq so far
+-- (like max-key in Clojure)
+f :: (Int,[Int]) -> [Int] -> (Int,[Int])
+f (m,l) nl = if nm > m then (nm,nl) else (m,l)
+  where nm = sum nl
+
+-- brute force search for the maximal sum subsequence
+max_sum_subsequence :: [Int] -> [Int]
+max_sum_subsequence [] = []
+max_sum_subsequence xs = snd (foldl f (sum h,h) sub_seqs)
+  where sub_seqs = map (\p -> extract p xs) (start_end_pairs (length xs))
+        h = head sub_seqs
